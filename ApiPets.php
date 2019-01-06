@@ -58,7 +58,21 @@
                 echo json_encode($response);
         
         
-    break;  
+        break; 
+
+        case 'find':
+
+        $query = mysqli_query($conn,"SELECT age,weight,species,special_note,colour FROM pets WHERE pet_owner_id='".$_GET['pet_owner_id']."' AND name='".$_GET['name']."' ");
+
+        if($query){
+            while($row=mysqli_fetch_array($query)){
+                $flag[]=$row;
+            }
+            print(json_encode($flag));
+        }
+
+        break;
+
 
         }
     }
