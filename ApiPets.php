@@ -14,16 +14,19 @@
 
 		switch($_GET['apicall']){
 
-        //for view pets
+        //for view pets...................................................................................
         case 'view':
         $id = $_GET['pet_owner_id'];
 
+        //query to get data
         $query = mysqli_query($conn,"SELECT * FROM pets WHERE pet_owner_id='".$_GET['pet_owner_id']."'");
 
+        //insert in ti array
         if($query){
             while($row=mysqli_fetch_array($query)){
                 $flag[]=$row;
             }
+        //encode it
         print(json_encode($flag));
         }
 
@@ -31,7 +34,7 @@
                 
         break;
 
-        //add new pet
+        //add new pet..........................................................................................
         case 'add':
         
             //getting the values 
@@ -48,22 +51,101 @@
                 echo "name";
                 if(mysqli_query($conn ,$stmt)){
                 echo "data insertion succeeded";
-                    //adding the user data in response 
-                    $response['error'] = false; 
-                    $response['message'] = 'User registered successfully'; 
+                    
                 }
                 else{
                     echo "Data insertion error".mysqli_error($conn);
                 }	
-                echo json_encode($response);
-        
+                 
         
         break; 
 
-        case 'find':
+        //send appointment....................................................................................
+        case 'appointment':
+        
+            //getting the values 
+            $time = $_POST['time'];
+            $date = $_POST['date']; 
+            $address = $_POST['address'];
+            $type = $_POST['type']; 
+            $desc = $_POST['desc'];
+            $pet_owner_id = $_POST['pet_owner_id'];
+            
+                
+                //insert query to add appointment details
+                $stmt = "INSERT INTO appointments(time,date,address,type,description,pet_owner_id) VALUES('$time','$date','$address','$type','$desc','$pet_owner_id')";											//$stmt->bind_param($id,$name,$username,$password,$address,$mobile,$email,$imageURL);
+                
+                if(mysqli_query($conn ,$stmt)){
+                    echo "data insertion succeeded";
+                   
+                }
+                else{
+                    echo "Data insertion error".mysqli_error($conn);
+                }	
+               
+        
+            break; 
 
+        //find all pets of a client..............................................................................
+
+        case 'find':
+        
+        //qery to get pets
         $query = mysqli_query($conn,"SELECT age,weight,species,special_note,colour FROM pets WHERE pet_owner_id='".$_GET['pet_owner_id']."' AND name='".$_GET['name']."' ");
 
+
+        if($query){
+
+            while($row=mysqli_fetch_array($query)){
+            
+                $flag[]=$row;
+            }
+            print(json_encode($flag));
+        }
+
+        break;
+
+
+        //update petdetails......................................................................................
+        case 'update':
+
+            $name =  $_POST['name'];
+            $age =  $_POST['age'];
+            $weight = $_POST['weight'];
+
+						//query to update  details
+						$stmt = "UPDATE pets SET age='$age',weight='$weight' WHERE pet_owner_id='".$_POST['pet_owner_id']."' AND name='".$_POST['name']."' ";
+
+						if(mysqli_query($conn ,$stmt)){
+							echo "data updated ";
+								 
+							}
+							else{
+								echo "Somethiing error!".mysqli_error($conn);
+                            }
+                           	
+        break;
+
+        //remove a pet..........................................................................................
+        case 'delete':
+
+            //qery to delete a pet
+             $query = mysqli_query($conn,"DELETE FROM pets WHERE pet_owner_id='".$_POST['pet_owner_id']."' AND name='".$_POST['name']."' ");
+            if($query){
+                echo "pet removed!";
+            }
+            else{
+                echo "Somethiing error!";
+            }
+
+        break;
+
+         //view treatments....................................................................................
+        case 'treatments':
+
+        //query to get treatments
+        $query = mysqli_query($conn,"SELECT medicines,description,date FROM treatment WHERE pet_owner_id='".$_GET['pet_owner_id']."' AND pet_name='".$_GET['pet_name']."' ");
+       
         if($query){
             while($row=mysqli_fetch_array($query)){
                 $flag[]=$row;
@@ -72,7 +154,6 @@
         }
 
         break;
-
 
         }
     }
